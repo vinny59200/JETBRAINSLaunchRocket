@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Open Space</title>
+    <style>
+        .rocket {
+            transition: all 2s ease-in-out;
+            -webkit-transition: all 2s ease-in-out; /** Chrome & Safari **/
+            -moz-transition: all 2s ease-in-out; /** Firefox **/
+            -o-transition: all 2s ease-in-out; /** Opera **/
+            transform: rotate(15deg);
+            width: 120px;
+            z-index: 3;
+
+            position: relative;
+            left: 50px;
+            bottom: 200px;
+            border: 3px solid yellow;
+        }
+
+        .launch {
+            transform: translate(350px, -350px);
+            -webkit-transform: translate(350px, -350px); /** Chrome & Safari **/
+            -o-transform: translate(350px, -350px); /** Opera **/
+            -moz-transform: translate(350px, -350px); /** Firefox **/
+        }
+
+        .planet, .planet-area {
+        }
+
+        .planet {
+            position: relative;
+            left: 0px;
+            bottom: 0px;
+            width: 300px;
+            z-index: 2;
+            border: 3px solid red;
+        }
+
+        .planet-area {
+            position: absolute;
+            left: 0px;
+            bottom: 0px;
+            width: fit-content;
+            border: 3px solid green;
+        }
+
+        .space {
+            position: relative;
+            left: 0px;
+            bottom: 0px;
+            overflow: hidden;
+            height: 768px;
+            width: 1333px;
+            background-image: url("https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_960_720.jpg");
+            z-index: 1;
+            border: 3px solid purple;
+        }
+
+        input[type="range"] {
+            transform: rotate(270deg);
+            width: 50px;
+            height: 100px;
+        }
+
+        .levers {
+            border: 3px solid deepskyblue;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .check-buttons {
+            border: 3px solid orange;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .control-panel {
+            background: repeating-linear-gradient(-45deg, yellow, yellow 5px, black 5px, black 10px);
+            background-size: 400px 200px;
+            position: absolute;
+            left: 600px;
+            bottom: 100px;
+            width: 400px;
+            height: 200px;
+        }
+
+        .control-panel__inner {
+            margin: 9px;
+            background: linear-gradient(to bottom, #ccc 0%, #000 100%);
+        }
+
+    </style>
+
+    <script>
+
+        function docReady(fn) {
+            // see if DOM is already available
+            if (document.readyState === "complete" || document.readyState === "interactive") {
+                // call on next available tick
+                setTimeout(fn, 1);
+            } else {
+                document.addEventListener("DOMContentLoaded", fn);
+            }
+        }
+
+        function toggle() {
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            var disableLaunchBtn = false;
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked !== true) {
+                    disableLaunchBtn = true;
+                }
+            }
+            console.log("toggle" + disableLaunchBtn +" allup:"+ allLeversUp())
+            if(!disableLaunchBtn && allLeversUp())
+            document.getElementById("launch").disabled = disableLaunchBtn;
+        }
+
+        function allLeversUp() {
+            var levers = document.querySelectorAll('input[type="range"]');
+            var allUp = true;
+            for (var i = 0; i < levers.length; i++) {
+                console.log(levers[i].value)
+                if (levers[i].value !== "100") {
+                    allUp = false;
+                }
+            }
+            console.log("allUp" + allUp)
+           return allUp;
+        }
+
+
+        function launch() {
+            console.log("launch")
+            console.log(document.getElementById("rocket").className)
+            document.getElementById("rocket").classList.add("launch");
+        }
+
+        function checkPassword() {
+            if (document.getElementById("pwd").value === 'TrustNo1') {
+                var unlockedInputs = document.querySelectorAll("input");
+
+                unlockedInputs.forEach(function (tag) {
+                    if (tag.id === "pwd" || tag.id === "pwdOk") {
+                        document.getElementById(tag.id).disabled = true;
+                    } else if (tag.id !== "launch") {
+                        document.getElementById(tag.id).disabled = false;
+                    }
+                });
+            }
+        }
+
+        docReady(function () {
+            let body = document.getElementsByTagName("body")[0];
+            console.log(body.children.length === 1)
+            console.log(body.children[0].tagName.toLowerCase() === 'div')
+            console.log(body.children[0].className === 'space')
+
+
+            document.getElementById("pwd").placeholder = "Enter password to unlock";
+            var lockedInputs = document.querySelectorAll("input");
+
+            lockedInputs.forEach(function (tag) {
+                if (tag.id !== "pwd" && tag.id !== "pwdOk") {
+                    document.getElementById(tag.id).disabled = true;
+                }
+            });
+
+            var input = document.getElementById("pwd");
+
+
+            input.addEventListener("keyup", (event) => {
+                if (event.key === "Enter") {
+                    // Cancel the default action, if needed
+                    event.preventDefault();
+                    // Trigger the button element with a click
+                    checkPassword();
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+<div class="space">
+    <div class="planet-area">
+        <img class="planet" src="https://cdn3.iconfinder.com/data/icons/planets-1/512/Venus-256.png">
+
+        <img id="rocket" class="rocket"
+             src="https://cdn2.iconfinder.com/data/icons/party-new-years/128/Party_Newyears_Rocket-256.png">
+    </div>
+    <div class="control-panel">
+        <div class="control-panel__inner">
+
+            <input type="password" id="pwd" name="pwd" style="color:gray;border:2px inset yellow;margin-top:10px;"/>
+            <input onclick="checkPassword()" type="submit" id="pwdOk" style=" background-color: yellow" value="OK"/>
+
+
+            <div class="check-buttons">
+                <input type="checkbox" onclick="toggle()" id="check1"/>
+                <input type="checkbox" onclick="toggle()" id="check2"/>
+                <input type="checkbox" onclick="toggle()" id="check3"/>
+                <input type="checkbox" onclick="toggle()" id="check4"/>
+                <input type="checkbox" onclick="toggle()" id="check5"/>
+                <input type="checkbox" onclick="toggle()" id="check6"/>
+            </div>
+            <div class="levers">
+                <input type="range" value="0" min="0" max="100" onchange="toggle()" id="lever1" />
+                <input type="range" value="0" min="0" max="100" onchange="toggle()" id="lever2"/>
+                <input type="range" value="0" min="0" max="100" onchange="toggle()" id="lever3"/>
+                <input type="range" value="0" min="0" max="100" onchange="toggle()" id="lever4"/>
+                <input type="range" value="0" min="0" max="100" onchange="toggle()" id="lever5"/>
+            </div>
+            <input type="submit" id="launch"
+                   style="color:white;margin: auto;display: block;top:5px;position:relative;border-radius: 10px;border: 1px solid yellow; background-color: red;"
+                   value="Launch" onclick="launch()"/>
+        </div>
+    </div>
+</div>
+</body>
+
+
+</html>
